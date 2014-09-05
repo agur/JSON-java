@@ -62,6 +62,10 @@ public class JSONDateUtils {
         testFew("{date_time:2013-06-15 10:30:09.234-0700, abc:222, date2_time:2013-06-15 11:30:09.234-0700}", "yyyy-MM-dd HH:mm:ss.SSSZ", new String[]{"date_time", "date2_time"});
         testFew("{date_time:2013-06-15 12:30:09.234-0700, abc:222, date_time2:2013-06-15 12:30:09.234-0700}", "yyyy-MM-dd HH:mm:ss.SSSZ", new String[]{"date_time", "date_time2"});
         testFew("{date_time:2013-06-15 13:30:09.234-0700, abc:222, date_time2:2013-06-15 14:30:09.234-0700}", "yyyy-MM-dd HH:mm:ss.SSSZ", new String[]{"date_time", "date_time2"});
+        testOne("{date_time: 2013-06-15 14:30:09.234, abc:222}", "yyyy-MM-dd HH:mm:ss.S", "date_time");
+        testOne("{date_time: 2013-06-15 15:30:09.23, abc:222}", "yyyy-MM-dd HH:mm:ss.S", "date_time");
+        testOne("{date_time: 2013-06-15 16:30:09.2, abc:222}", "yyyy-MM-dd HH:mm:ss.S", "date_time");
+        testOne("{date_time: 2013-06-15 17:30:09.0, abc:222}", "yyyy-MM-dd HH:mm:ss.S", "date_time");
     }
 
     private void testOne(String jsonStr, String pattern, String jsonName) throws ParseException {
