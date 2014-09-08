@@ -38,10 +38,15 @@ public class JSONDateUtils {
         if(date == null) {
             throw new IllegalArgumentException("Can't parse date pattern: " + sdf.toPattern() + ", in text: " + text + ", at pos: " + p);
         }
-        String dateString = sdf.format(date);
         String relevantString = text.substring(p);
         String prefix = text.substring(0, p);
-        return prefix + relevantString.replaceFirst(dateString, "\"" + dateString + "\"");
+        int relevantEnd = relevantString.indexOf(',');
+        if(relevantEnd < 0)
+            relevantEnd = relevantString.indexOf('}');
+        if(relevantEnd < 0)
+            throw new ParseException("Can't find end of value: " + jsonName + ", relevantString: " + relevantString, relevantEnd);
+        String suffix = relevantString.substring(relevantEnd);
+        return prefix + "\"" + relevantString.substring(0,relevantEnd) + "\"" + suffix;
     }
 
     @Test
@@ -66,6 +71,7 @@ public class JSONDateUtils {
         testOne("{date_time: 2013-06-15 15:30:09.23, abc:222}", "yyyy-MM-dd HH:mm:ss.S", "date_time");
         testOne("{date_time: 2013-06-15 16:30:09.2, abc:222}", "yyyy-MM-dd HH:mm:ss.S", "date_time");
         testOne("{date_time: 2013-06-15 17:30:09.0, abc:222}", "yyyy-MM-dd HH:mm:ss.S", "date_time");
+        testFew("{creationDate:2014-08-15 19:01:11.588, lastModifiedDate:2014-09-08 14:44:00.006}", "yyyy-MM-dd HH:mm:ss.S", new String[]{"creationDate", "lastModifiedDate"});
     }
 
     private void testOne(String jsonStr, String pattern, String jsonName) throws ParseException {
@@ -79,6 +85,7 @@ public class JSONDateUtils {
     private void testFew(String jsonStr, String pattern, String[] jsonNames) throws ParseException {
         SimpleDateFormat sdf = new SimpleDateFormat(pattern);
         String fixed = fixJSONTimeFormat(jsonStr, sdf, jsonNames);
+        System.out.println("jsonStr: " + jsonStr + ", fixed: " + fixed);
         JSONObject jsonObject = new JSONObject(fixed);
         for(String jsonName : jsonNames) {
             Object value = jsonObject.get(jsonName);
